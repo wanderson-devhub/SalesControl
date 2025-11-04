@@ -170,11 +170,18 @@ export default function LoginPage() {
             <p className="text-xs text-muted-foreground text-center">Acesso de teste com dados fictícios</p>
           </div>
 
-          <div className="mt-4 text-center text-sm">
-            <span className="text-muted-foreground">Não tem conta? </span>
-            <Link href="/register" className="text-primary hover:underline font-medium">
-              Cadastre-se
-            </Link>
+          <div className="mt-4 text-center text-sm space-y-2">
+            <div>
+              <span className="text-muted-foreground">Não tem conta? </span>
+              <Link href="/register" className="text-primary hover:underline font-medium">
+                Cadastre-se
+              </Link>
+            </div>
+            <div>
+              <Link href="/forgot-password" className="text-primary hover:underline font-medium">
+                Esqueceu a senha?
+              </Link>
+            </div>
           </div>
         </CardContent>
       </Card>

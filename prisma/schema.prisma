@@ -11,18 +11,20 @@ generator client {
 }
 
 model User {
-  id        String     @id @default(cuid())
-  email     String     @unique
-  password  String
-  warName   String
-  rank      String
-  company   String
-  phone     String
-  isAdmin   Boolean    @default(false)
-  pixKey    String?
-  pixQrCode String?
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id                String     @id @default(cuid())
+  email             String     @unique
+  password          String
+  warName           String
+  rank              String
+  company           String
+  phone             String
+  isAdmin           Boolean    @default(false)
+  pixKey            String?
+  pixQrCode         String?
+  resetToken        String?
+  resetTokenExpiry  DateTime?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
 
   consumptions Consumption[]
   charges      Charge[]

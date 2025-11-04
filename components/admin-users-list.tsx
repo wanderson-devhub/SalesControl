@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 import { MessageCircle, Trash2, Users, ChevronDown } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
@@ -26,6 +27,7 @@ export function AdminUsersList({ adminId }: AdminUsersListProps) {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | "random">("asc")
   const [filterCompany, setFilterCompany] = useState<string>("all")
   const [filterRank, setFilterRank] = useState<string>("all")
+  const [searchTerm, setSearchTerm] = useState<string>("")
   const [expandedUser, setExpandedUser] = useState<string | null>(null)
 
   useEffect(() => {
@@ -46,6 +48,13 @@ export function AdminUsersList({ adminId }: AdminUsersListProps) {
 
   function getFilteredAndSortedUsers() {
     let filtered = [...users]
+
+    if (searchTerm) {
+      filtered = filtered.filter((u) =>
+        u.warName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        u.email.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    }
 
     if (filterCompany !== "all") {
       filtered = filtered.filter((u) => u.company === filterCompany)
@@ -104,7 +113,16 @@ export function AdminUsersList({ adminId }: AdminUsersListProps) {
       </div>
 
       <div className="bg-card border border-border rounded-lg p-4 mb-6">
-        <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
+        <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <label className="text-sm font-medium text-muted-foreground mb-2 block">Pesquisar</label>
+            <Input
+              placeholder="Nome ou email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+
           <div>
             <label className="text-sm font-medium text-muted-foreground mb-2 block">Ordenação</label>
             <Select value={sortOrder} onValueChange={(value: any) => setSortOrder(value)}>

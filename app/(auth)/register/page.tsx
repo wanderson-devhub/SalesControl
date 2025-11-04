@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Mail, Lock, User, Briefcase, Phone } from "lucide-react"
 
 export default function RegisterPage() {
@@ -26,7 +27,23 @@ export default function RegisterPage() {
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    let formattedValue = value
+
+    if (name === 'phone') {
+      const cleaned = value.replace(/\D/g, '')
+      if (cleaned.length <= 11) {
+        formattedValue = cleaned.replace(/(\d{0,2})(\d{0,1})(\d{0,4})(\d{0,4})/, (match, p1, p2, p3, p4) => {
+          let result = ''
+          if (p1) result += `(${p1}`
+          if (p2) result += `) ${p2}`
+          if (p3) result += ` ${p3}`
+          if (p4) result += `-${p4}`
+          return result
+        })
+      }
+    }
+
+    setFormData((prev) => ({ ...prev, [name]: formattedValue }))
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -83,30 +100,30 @@ export default function RegisterPage() {
 
             <div className="space-y-2">
               <Label htmlFor="rank">Posto/Graduação</Label>
-              <Input
-                id="rank"
-                name="rank"
-                placeholder="ex: Soldado, Cabo, Sargento"
-                value={formData.rank}
-                onChange={handleChange}
-                required
-              />
+              <Select value={formData.rank} onValueChange={(value) => setFormData((prev) => ({ ...prev, rank: value }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o posto/graduação" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Soldado">Soldado</SelectItem>
+                  <SelectItem value="Cabo">Cabo</SelectItem>
+                  <SelectItem value="Sargento">Sargento</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="company">Companhia</Label>
-              <div className="relative">
-                <Briefcase className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="company"
-                  name="company"
-                  placeholder="Companhia A"
-                  value={formData.company}
-                  onChange={handleChange}
-                  className="pl-10"
-                  required
-                />
-              </div>
+              <Select value={formData.company} onValueChange={(value) => setFormData((prev) => ({ ...prev, company: value }))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a companhia" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1 Cia">1 Cia</SelectItem>
+                  <SelectItem value="2 Cia">2 Cia</SelectItem>
+                  <SelectItem value="3 Cia">3 Cia</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
@@ -121,6 +138,7 @@ export default function RegisterPage() {
                   value={formData.phone}
                   onChange={handleChange}
                   className="pl-10"
+                  maxLength={16}
                   required
                 />
               </div>
