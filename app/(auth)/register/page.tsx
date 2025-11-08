@@ -1,17 +1,29 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { PasswordInput } from "@/components/ui/password-input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Mail, Lock, User, Briefcase, Phone } from "lucide-react"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/ui/password-input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Mail, Lock, User, Briefcase, Phone } from "lucide-react";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -21,56 +33,59 @@ export default function RegisterPage() {
     rank: "",
     company: "",
     phone: "",
-  })
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target
-    let formattedValue = value
+    const { name, value } = e.target;
+    let formattedValue = value;
 
-    if (name === 'phone') {
-      const cleaned = value.replace(/\D/g, '')
+    if (name === "phone") {
+      const cleaned = value.replace(/\D/g, "");
       if (cleaned.length <= 11) {
-        formattedValue = cleaned.replace(/(\d{0,2})(\d{0,1})(\d{0,4})(\d{0,4})/, (match, p1, p2, p3, p4) => {
-          let result = ''
-          if (p1) result += `(${p1}`
-          if (p2) result += `) ${p2}`
-          if (p3) result += ` ${p3}`
-          if (p4) result += `-${p4}`
-          return result
-        })
+        formattedValue = cleaned.replace(
+          /(\d{0,2})(\d{0,1})(\d{0,4})(\d{0,4})/,
+          (match, p1, p2, p3, p4) => {
+            let result = "";
+            if (p1) result += `(${p1}`;
+            if (p2) result += `) ${p2}`;
+            if (p3) result += ` ${p3}`;
+            if (p4) result += `-${p4}`;
+            return result;
+          }
+        );
       }
     }
 
-    setFormData((prev) => ({ ...prev, [name]: formattedValue }))
+    setFormData((prev) => ({ ...prev, [name]: formattedValue }));
   }
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setError("")
-    setLoading(true)
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
     try {
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "Falha ao cadastrar")
-        return
+        setError(data.error || "Falha ao cadastrar");
+        return;
       }
 
-      router.push("/dashboard")
+      router.push("/dashboard");
     } catch (err) {
-      setError("Erro ao conectar ao servidor")
+      setError("Erro ao conectar ao servidor");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -101,28 +116,44 @@ export default function RegisterPage() {
 
             <div className="space-y-2">
               <Label htmlFor="rank">Posto/Graduação</Label>
-              <Select value={formData.rank} onValueChange={(value) => setFormData((prev) => ({ ...prev, rank: value }))}>
-                <SelectTrigger>
+              <Select
+                value={formData.rank}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, rank: value }))
+                }
+              >
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Selecione o posto/graduação" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Soldado">Soldado</SelectItem>
                   <SelectItem value="Cabo">Cabo</SelectItem>
-                  <SelectItem value="Sargento">Sargento</SelectItem>
+                  <SelectItem value="3º Sargento">3º Sargento</SelectItem>
+                  <SelectItem value="2º Sargento">2º Sargento</SelectItem>
+                  <SelectItem value="1º Sargento">1º Sargento</SelectItem>
+                  <SelectItem value="2º Tenente">2º Tenente</SelectItem>
+                  <SelectItem value="1º Tenente">1º Tenente</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="company">Companhia</Label>
-              <Select value={formData.company} onValueChange={(value) => setFormData((prev) => ({ ...prev, company: value }))}>
-                <SelectTrigger>
+              <Select
+                value={formData.company}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, company: value }))
+                }
+              >
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Selecione a companhia" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1 Cia">1 Cia</SelectItem>
-                  <SelectItem value="2 Cia">2 Cia</SelectItem>
-                  <SelectItem value="3 Cia">3 Cia</SelectItem>
+                  <SelectItem value="1ª Cia">1ª Cia</SelectItem>
+                  <SelectItem value="2ª Cia">2ª Cia</SelectItem>
+                  <SelectItem value="3ª Cia">3ª Cia</SelectItem>
+                  <SelectItem value="CCAp">CCAp</SelectItem>
+                  <SelectItem value="Base ADM">Base ADM</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -191,12 +222,15 @@ export default function RegisterPage() {
 
           <div className="text-center text-sm">
             <span className="text-muted-foreground">Já tem conta? </span>
-            <Link href="/login" className="text-primary hover:underline font-medium">
+            <Link
+              href="/login"
+              className="text-primary hover:underline font-medium"
+            >
               Faça login
             </Link>
           </div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

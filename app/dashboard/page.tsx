@@ -112,7 +112,7 @@ export default function DashboardPage() {
                   <img
                     src={user.pixQrCode}
                     alt="QR Code Pix"
-                    className="w-32 h-32 mx-auto"
+                    className="w-32 h-32 mx-auto rounded-lg"
                   />
                 </div>
               )}
@@ -120,7 +120,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <div className="grid gap-4 mb-8">
+        <div className="grid gap-4 mb-8 grid-cols-1 md:grid-cols-1">
           <div className="bg-card border border-border rounded-lg p-6 shadow-professional hover-lift animate-slide-up">
             <div className="flex items-center justify-between">
               <div>

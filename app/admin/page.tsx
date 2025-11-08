@@ -24,7 +24,7 @@ export default async function AdminPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header userName={admin.warName} pixKey={admin.pixKey || undefined} />
+      <Header userName={admin.warName} />
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Painel Administrativo</h1>
