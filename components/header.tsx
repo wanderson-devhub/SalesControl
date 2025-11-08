@@ -42,7 +42,7 @@ export function Header({ userName, pixKey }: HeaderProps) {
     <header className="bg-card/95 backdrop-blur-sm border-b border-border sticky top-0 z-50 shadow-professional">
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => router.push("/dashboard")}>
             <Shield className="h-6 w-6 text-primary" />
             <h1 className="text-xl font-bold text-foreground">Controle de Estoque</h1>
           </div>

@@ -62,13 +62,17 @@ export function ProfileForm({ user }: ProfileFormProps) {
         body: JSON.stringify(formData),
       })
 
+      const data = await response.json()
+
       if (response.ok) {
         setMessage("Perfil atualizado com sucesso!")
       } else {
-        setMessage("Erro ao atualizar perfil")
+        setMessage(data.error || "Erro ao atualizar perfil")
+        console.error("Update error:", data)
       }
     } catch (error) {
       setMessage("Erro ao conectar ao servidor")
+      console.error("Network error:", error)
     } finally {
       setLoading(false)
     }
@@ -159,6 +163,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
                 value={formData.phone}
                 onChange={handleChange}
                 className="pl-10"
+                maxLength={16}
                 required
               />
             </div>

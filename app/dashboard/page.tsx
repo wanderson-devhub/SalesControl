@@ -1,35 +1,79 @@
-import { redirect } from "next/navigation"
-import { getSession } from "@/lib/auth"
-import prisma from "@/lib/db"
+"use client"
+
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Header } from "@/components/header"
 import { ConsumptionList } from "@/components/consumption-list"
 
-export default async function DashboardPage() {
-  const session = await getSession()
+interface Consumption {
+  id: string
+  quantity: number
+  createdAt: Date
+  product: {
+    id: string
+    name: string
+    price: number
+    imageUrl: string
+  }
+}
 
-  if (!session) {
-    redirect("/login")
+interface User {
+  id: string
+  warName: string
+  pixKey?: string
+  pixQrCode?: string
+  consumptions: Consumption[]
+}
+
+export default function DashboardPage() {
+  const router = useRouter()
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        // Check session via API instead of importing server-side auth
+        const sessionResponse = await fetch("/api/auth/session")
+        if (!sessionResponse.ok) {
+          router.push("/login")
+          return
+        }
+
+        const session = await sessionResponse.json()
+        if (session.isAdmin) {
+          router.push("/admin")
+          return
+        }
+
+        const userData = await fetch("/api/users/" + session.id).then(res => res.json())
+        setUser(userData)
+      } catch (error) {
+        console.error("Error loading data:", error)
+        router.push("/login")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadData()
+  }, [router])
+
+  const handleConsumptionsChange = (newConsumptions: Consumption[]) => {
+    if (user) {
+      setUser({ ...user, consumptions: newConsumptions })
+    }
   }
 
-  if (session.isAdmin) {
-    redirect("/admin")
+  if (loading) {
+    return <div className="min-h-screen bg-background flex items-center justify-center">Carregando...</div>
   }
-
-  const user = await prisma.user.findUnique({
-    where: { id: session.id },
-    include: {
-      consumptions: {
-        include: { product: true },
-        orderBy: { createdAt: 'desc' },
-      },
-    },
-  })
 
   if (!user) {
-    redirect("/login")
+    return null
   }
 
-  const total = user.consumptions.reduce((sum, c) => sum + c.quantity * c.product.price, 0)
+  const total = user.consumptions?.reduce((sum, c) => sum + c.quantity * c.product.price, 0) || 0
 
   // Get current date in Portuguese format
   const currentDate = new Date()
@@ -91,7 +135,11 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        <ConsumptionList initialConsumptions={user.consumptions} userId={user.id} />
+        <ConsumptionList
+          initialConsumptions={user.consumptions}
+          userId={user.id}
+          onConsumptionsChange={handleConsumptionsChange}
+        />
       </main>
     </div>
   )

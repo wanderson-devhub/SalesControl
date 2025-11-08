@@ -175,45 +175,46 @@ export default function ProductsPage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-1 block">URL da Imagem</label>
-                <Input
-                  value={formData.imageUrl}
-                  onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                  placeholder="https://images.unsplash.com/... ou faça upload"
-                />
-                <div className="mt-2">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0]
-                      if (file) {
-                        const formDataUpload = new FormData()
-                        formDataUpload.append('file', file)
-                        formDataUpload.append('upload_preset', 'controle-estoque') // Replace with your Cloudinary preset
-
-                        try {
-                          const response = await fetch('https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload', { // Replace YOUR_CLOUD_NAME
-                            method: 'POST',
-                            body: formDataUpload,
-                          })
-                          const data = await response.json()
-                          setFormData({ ...formData, imageUrl: data.secure_url })
-                        } catch (error) {
-                          console.error('Error uploading image:', error)
-                          // Fallback to placeholder
-                          setFormData({ ...formData, imageUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=400&fit=crop' })
-                        }
-                      }
-                    }}
-                    className="text-sm"
+                <label className="text-sm font-medium mb-1 block">Imagem do Produto</label>
+                <div className="space-y-2">
+                  <Input
+                    value={formData.imageUrl}
+                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                    placeholder="URL da imagem ou faça upload abaixo"
                   />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          // Convert to base64 for now (can be replaced with proper upload later)
+                          const reader = new FileReader()
+                          reader.onload = (event) => {
+                            const base64 = event.target?.result as string
+                            setFormData({ ...formData, imageUrl: base64 })
+                          }
+                          reader.readAsDataURL(file)
+                        }
+                      }}
+                      className="hidden"
+                      id="image-upload"
+                    />
+                    <label
+                      htmlFor="image-upload"
+                      className="inline-flex items-center gap-2 px-3 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 cursor-pointer text-sm"
+                    >
+                      📁 Fazer Upload
+                    </label>
+                    <span className="text-xs text-muted-foreground">ou cole uma URL acima</span>
+                  </div>
                 </div>
                 {formData.imageUrl && (
                   <img
                     src={formData.imageUrl || "/placeholder.svg"}
                     alt="Preview"
-                    className="mt-2 w-full h-32 object-cover rounded"
+                    className="mt-2 w-full h-32 object-cover rounded border"
                   />
                 )}
               </div>
