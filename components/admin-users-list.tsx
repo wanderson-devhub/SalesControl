@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { MessageCircle, Trash2, Users, ChevronDown } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 
 interface User {
   id: string
@@ -24,11 +25,14 @@ interface AdminUsersListProps {
 export function AdminUsersList({ adminId }: AdminUsersListProps) {
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | "random">("asc")
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc" | "random" | "highest" | "lowest">("asc")
   const [filterCompany, setFilterCompany] = useState<string>("all")
   const [filterRank, setFilterRank] = useState<string>("all")
   const [searchTerm, setSearchTerm] = useState<string>("")
   const [expandedUser, setExpandedUser] = useState<string | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [showCleared, setShowCleared] = useState(false)
+  const itemsPerPage = 20
 
   useEffect(() => {
     fetchUsers()
@@ -70,6 +74,10 @@ export function AdminUsersList({ adminId }: AdminUsersListProps) {
       filtered.sort((a, b) => b.warName.localeCompare(a.warName))
     } else if (sortOrder === "random") {
       filtered.sort(() => Math.random() - 0.5)
+    } else if (sortOrder === "highest") {
+      filtered.sort((a, b) => b.total - a.total)
+    } else if (sortOrder === "lowest") {
+      filtered.sort((a, b) => a.total - b.total)
     }
 
     return filtered
@@ -90,7 +98,7 @@ export function AdminUsersList({ adminId }: AdminUsersListProps) {
 
   function handleWhatsAppCharge(user: User) {
     const message = `Olá ${user.warName}, você está devendo R$${user.total.toFixed(2)}. Por favor, efetue o pagamento.`
-    const whatsappUrl = `https://wa.me/${user.phone.replace(/\D/g, "")}?text=${encodeURIComponent(message)}`
+    const whatsappUrl = `https://wa.me/55${user.phone.replace(/\D/g, "")}?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, "_blank")
   }
 
@@ -133,6 +141,8 @@ export function AdminUsersList({ adminId }: AdminUsersListProps) {
                 <SelectItem value="asc">A-Z</SelectItem>
                 <SelectItem value="desc">Z-A</SelectItem>
                 <SelectItem value="random">Aleatório</SelectItem>
+                <SelectItem value="highest">Maior Valor</SelectItem>
+                <SelectItem value="lowest">Menor Valor</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -174,7 +184,25 @@ export function AdminUsersList({ adminId }: AdminUsersListProps) {
       </div>
 
       <div className="space-y-3">
-        {filteredUsers.map((user) => (
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex gap-2">
+            <Button
+              variant={showCleared ? "default" : "outline"}
+              size="sm"
+              onClick={() => {
+                setShowCleared(!showCleared)
+                setCurrentPage(1)
+              }}
+            >
+              {showCleared ? "Ver Pendentes" : "Ver Zeros"}
+            </Button>
+          </div>
+        </div>
+
+        {filteredUsers
+          .filter((user) => showCleared ? user.total === 0 : user.total > 0)
+          .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+          .map((user) => (
           <Card key={user.id} className="hover-lift">
             <CardContent className="pt-6">
               <div className="flex flex-col gap-4">
@@ -215,15 +243,59 @@ export function AdminUsersList({ adminId }: AdminUsersListProps) {
                     <MessageCircle className="h-4 w-4" />
                     WhatsApp
                   </Button>
-                  <Button variant="destructive" size="sm" onClick={() => handleClearDebt(user.id)} className="gap-2 hover-lift">
-                    <Trash2 className="h-4 w-4" />
-                    Zerar
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" size="sm" className="gap-2 hover-lift">
+                        <Trash2 className="h-4 w-4" />
+                        Zerar
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Confirmar Zerar Dívida</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Você está prestes a zerar a dívida de {user.warName} no valor de R$ {user.total.toFixed(2)}.
+                          Esta ação não pode ser desfeita.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleClearDebt(user.id)}>
+                          Confirmar
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             </CardContent>
           </Card>
         ))}
+
+        {/* Pagination */}
+        {filteredUsers.filter((user) => showCleared ? user.total === 0 : user.total > 0).length > itemsPerPage && (
+          <div className="flex justify-center gap-2 mt-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+            >
+              Anterior
+            </Button>
+            <span className="text-sm text-muted-foreground self-center">
+              Página {currentPage} de {Math.ceil(filteredUsers.filter((user) => showCleared ? user.total === 0 : user.total > 0).length / itemsPerPage)}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={currentPage * itemsPerPage >= filteredUsers.filter((user) => showCleared ? user.total === 0 : user.total > 0).length}
+            >
+              Próxima
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   )

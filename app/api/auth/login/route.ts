@@ -8,21 +8,28 @@ export async function POST(request: NextRequest) {
     const { email, password } = await request.json()
 
     if (!email || !password) {
-      return NextResponse.json({ error: "Email and password are required" }, { status: 400 })
+      return NextResponse.json({ error: "Email/Nome de Guerra e senha são obrigatórios" }, { status: 400 })
     }
 
-    const user = await prisma.user.findUnique({
+    // Try to find user by email first, then by warName
+    let user = await prisma.user.findUnique({
       where: { email },
     })
 
     if (!user) {
-      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
+      user = await prisma.user.findFirst({
+        where: { warName: email },
+      })
+    }
+
+    if (!user) {
+      return NextResponse.json({ error: "Usuário não encontrado" }, { status: 401 })
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password)
 
     if (!isPasswordValid) {
-      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
+      return NextResponse.json({ error: "Senha incorreta" }, { status: 401 })
     }
 
     await createSession(user)

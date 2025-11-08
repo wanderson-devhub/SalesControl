@@ -51,10 +51,7 @@ export function Header({ userName, pixKey }: HeaderProps) {
         {pixKey && (
           <div className="hidden md:flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-lg border border-primary/20 hover-lift">
             <span className="text-sm text-muted-foreground">Pix:</span>
-            <code
-              className="text-sm font-mono text-primary cursor-pointer hover:opacity-75 transition-opacity"
-              onClick={() => navigator.clipboard.writeText(pixKey)}
-            >
+            <code className="text-sm font-mono text-primary">
               {pixKey}
             </code>
           </div>
@@ -80,7 +77,7 @@ export function Header({ userName, pixKey }: HeaderProps) {
           </Button>
 
           <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger asChild suppressHydrationWarning>
               <Button variant="ghost" size="icon" className="hover-lift">
                 <User className="h-4 w-4" />
               </Button>

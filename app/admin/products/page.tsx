@@ -4,7 +4,8 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Plus, Edit2, Trash2, Check } from "lucide-react"
+import { Plus, Edit2, Trash2, Check, ArrowLeft } from "lucide-react"
+import Link from "next/link"
 import {
   Dialog,
   DialogContent,
@@ -133,6 +134,12 @@ export default function ProductsPage() {
   return (
     <div className="p-4 space-y-4 max-w-4xl mx-auto">
       <div className="flex justify-between items-center">
+        <Link href="/admin">
+          <Button variant="outline" size="sm" className="gap-2">
+            <ArrowLeft className="h-4 w-4" />
+            Voltar
+          </Button>
+        </Link>
         <h1 className="text-3xl font-bold">Gerenciar Produtos</h1>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
@@ -168,12 +175,40 @@ export default function ProductsPage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-1 block">URL da Imagem (Unsplash)</label>
+                <label className="text-sm font-medium mb-1 block">URL da Imagem</label>
                 <Input
                   value={formData.imageUrl}
                   onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                  placeholder="https://images.unsplash.com/..."
+                  placeholder="https://images.unsplash.com/... ou faça upload"
                 />
+                <div className="mt-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0]
+                      if (file) {
+                        const formDataUpload = new FormData()
+                        formDataUpload.append('file', file)
+                        formDataUpload.append('upload_preset', 'controle-estoque') // Replace with your Cloudinary preset
+
+                        try {
+                          const response = await fetch('https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload', { // Replace YOUR_CLOUD_NAME
+                            method: 'POST',
+                            body: formDataUpload,
+                          })
+                          const data = await response.json()
+                          setFormData({ ...formData, imageUrl: data.secure_url })
+                        } catch (error) {
+                          console.error('Error uploading image:', error)
+                          // Fallback to placeholder
+                          setFormData({ ...formData, imageUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=400&fit=crop' })
+                        }
+                      }
+                    }}
+                    className="text-sm"
+                  />
+                </div>
                 {formData.imageUrl && (
                   <img
                     src={formData.imageUrl || "/placeholder.svg"}

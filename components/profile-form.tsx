@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { User, Briefcase, Phone, Key, QrCode } from "lucide-react"
 
 interface ProfileFormProps {
@@ -17,8 +18,8 @@ interface ProfileFormProps {
 export function ProfileForm({ user }: ProfileFormProps) {
   const [formData, setFormData] = useState({
     warName: user.warName,
-    rank: user.rank,
-    company: user.company,
+    rank: user.rank || "",
+    company: user.company || "",
     phone: user.phone,
     ...(user.isAdmin && {
       pixKey: user.pixKey || "",
@@ -30,7 +31,23 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    let formattedValue = value
+
+    if (name === 'phone') {
+      const cleaned = value.replace(/\D/g, '')
+      if (cleaned.length <= 11) {
+        formattedValue = cleaned.replace(/(\d{0,2})(\d{0,1})(\d{0,4})(\d{0,4})/, (match, p1, p2, p3, p4) => {
+          let result = ''
+          if (p1) result += `(${p1}`
+          if (p2) result += `) ${p2}`
+          if (p3) result += ` ${p3}`
+          if (p4) result += `-${p4}`
+          return result
+        })
+      }
+    }
+
+    setFormData((prev) => ({ ...prev, [name]: formattedValue }))
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -74,23 +91,61 @@ export function ProfileForm({ user }: ProfileFormProps) {
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" name="email" value={user.email} disabled className="bg-muted" />
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="rank">Posto/Graduação</Label>
-            <Input id="rank" name="rank" value={formData.rank} onChange={handleChange} required />
+            <Select value={formData.rank} onValueChange={(value) => setFormData({ ...formData, rank: value })}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o posto/graduação" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Soldado">Soldado</SelectItem>
+                <SelectItem value="Cabo">Cabo</SelectItem>
+                <SelectItem value="3º Sargento">3º Sargento</SelectItem>
+                <SelectItem value="2º Sargento">2º Sargento</SelectItem>
+                <SelectItem value="1º Sargento">1º Sargento</SelectItem>
+                <SelectItem value="Subtenente">Subtenente</SelectItem>
+                <SelectItem value="Aspirante">Aspirante</SelectItem>
+                <SelectItem value="2º Tenente">2º Tenente</SelectItem>
+                <SelectItem value="1º Tenente">1º Tenente</SelectItem>
+                <SelectItem value="Capitão">Capitão</SelectItem>
+                <SelectItem value="Major">Major</SelectItem>
+                <SelectItem value="Tenente-Coronel">Tenente-Coronel</SelectItem>
+                <SelectItem value="Coronel">Coronel</SelectItem>
+                <SelectItem value="General de Brigada">General de Brigada</SelectItem>
+                <SelectItem value="General de Divisão">General de Divisão</SelectItem>
+                <SelectItem value="General de Exército">General de Exército</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="company">Companhia</Label>
-            <div className="relative">
-              <Briefcase className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="company"
-                name="company"
-                value={formData.company}
-                onChange={handleChange}
-                className="pl-10"
-                required
-              />
-            </div>
+            <Select value={formData.company} onValueChange={(value) => setFormData({ ...formData, company: value })}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione a companhia" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1ª Cia">1ª Cia</SelectItem>
+                <SelectItem value="2ª Cia">2ª Cia</SelectItem>
+                <SelectItem value="3ª Cia">3ª Cia</SelectItem>
+                <SelectItem value="4ª Cia">4ª Cia</SelectItem>
+                <SelectItem value="5ª Cia">5ª Cia</SelectItem>
+                <SelectItem value="6ª Cia">6ª Cia</SelectItem>
+                <SelectItem value="7ª Cia">7ª Cia</SelectItem>
+                <SelectItem value="8ª Cia">8ª Cia</SelectItem>
+                <SelectItem value="9ª Cia">9ª Cia</SelectItem>
+                <SelectItem value="10ª Cia">10ª Cia</SelectItem>
+                <SelectItem value="11ª Cia">11ª Cia</SelectItem>
+                <SelectItem value="12ª Cia">12ª Cia</SelectItem>
+                <SelectItem value="Cia Comando">Cia Comando</SelectItem>
+                <SelectItem value="Cia Apoio">Cia Apoio</SelectItem>
+                <SelectItem value="Pelotão Especial">Pelotão Especial</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">

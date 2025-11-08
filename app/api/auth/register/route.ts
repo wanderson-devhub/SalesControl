@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
 
     // Validate input
     if (!email || !password || !warName || !rank || !company || !phone) {
-      return NextResponse.json({ error: "All fields are required" }, { status: 400 })
+      return NextResponse.json({ error: "Todos os campos são obrigatórios" }, { status: 400 })
     }
 
     // Check if user exists
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingUser) {
-      return NextResponse.json({ error: "Email already registered" }, { status: 409 })
+      return NextResponse.json({ error: "Email já cadastrado" }, { status: 409 })
     }
 
     // Hash password
@@ -45,6 +45,6 @@ export async function POST(request: NextRequest) {
     )
   } catch (error) {
     console.error("Registration error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return NextResponse.json({ error: "Erro interno do servidor" }, { status: 500 })
   }
 }
