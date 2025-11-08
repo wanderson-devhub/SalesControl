@@ -50,12 +50,12 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const user = await prisma.user.update({
       where: { id },
       data: {
-        ...(warName && { warName }),
-        ...(rank && { rank }),
-        ...(company && { company }),
-        ...(phone && { phone }),
-        ...(pixKey && { pixKey }),
-        ...(pixQrCode && { pixQrCode }),
+        ...(warName !== undefined && { warName }),
+        ...(rank !== undefined && { rank }),
+        ...(company !== undefined && { company }),
+        ...(phone !== undefined && { phone }),
+        pixKey,
+        pixQrCode,
       },
     })
 

@@ -4,6 +4,9 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Header } from "@/components/header"
 import { ConsumptionList } from "@/components/consumption-list"
+import { Button } from "@/components/ui/button"
+import { Copy } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 interface Consumption {
   id: string
@@ -25,10 +28,17 @@ interface User {
   consumptions: Consumption[]
 }
 
+interface AdminPix {
+  pixKey?: string
+  pixQrCode?: string
+}
+
 export default function DashboardPage() {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
+  const [adminPix, setAdminPix] = useState<AdminPix | null>(null)
   const [loading, setLoading] = useState(true)
+  const { toast } = useToast()
 
   useEffect(() => {
     async function loadData() {
@@ -48,6 +58,10 @@ export default function DashboardPage() {
 
         const userData = await fetch("/api/users/" + session.id).then(res => res.json())
         setUser(userData)
+
+        // Fetch admin's pix info
+        const adminPixData = await fetch("/api/admin/pix").then(res => res.json())
+        setAdminPix(adminPixData)
       } catch (error) {
         console.error("Error loading data:", error)
         router.push("/login")
@@ -98,19 +112,36 @@ export default function DashboardPage() {
         </div>
 
         {/* Pix Key Section */}
-        {user.pixKey && (
+        {(adminPix?.pixKey || adminPix?.pixQrCode) && (
           <div className="bg-card border border-border rounded-lg p-6 shadow-professional hover-lift animate-slide-up mb-8">
             <div className="text-center">
               <h2 className="text-xl font-semibold mb-4">Chave Pix</h2>
-              <div className="bg-primary/10 px-6 py-4 rounded-lg border border-primary/20 inline-block">
-                <code className="text-lg font-mono text-primary">
-                  {user.pixKey}
-                </code>
-              </div>
-              {user.pixQrCode && (
+              {adminPix.pixKey && (
+                <div className="mb-4">
+                  <div className="bg-primary/10 px-6 py-4 rounded-lg border border-primary/20 inline-block">
+                    <code className="text-lg font-mono text-primary">
+                      {adminPix.pixKey}
+                    </code>
+                  </div>
+                  <Button
+                    onClick={async () => {
+                      await navigator.clipboard.writeText(adminPix.pixKey!)
+                      toast({
+                        description: "Chave Pix copiada!",
+                      })
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="mt-2 ml-2"
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+              {adminPix.pixQrCode && (
                 <div className="mt-4">
                   <img
-                    src={user.pixQrCode}
+                    src={adminPix.pixQrCode}
                     alt="QR Code Pix"
                     className="w-32 h-32 mx-auto rounded-lg"
                   />
