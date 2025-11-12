@@ -169,31 +169,41 @@ export function ConsumptionList({ initialConsumptions, userId, onConsumptionsCha
     }
   }
 
-  // Group consumptions by date
-  const groupedByDate = (consumptions || []).reduce((acc, consumption) => {
+  // Group consumptions by date and admin
+  const groupedByDateAndAdmin = (consumptions || []).reduce((acc, consumption) => {
     const date = new Date(consumption.createdAt).toLocaleDateString('pt-BR')
+    const adminId = consumption.product.admin?.id || 'unknown'
+    const adminName = consumption.product.admin?.warName || 'Admin Desconhecido'
+
     if (!acc[date]) {
-      acc[date] = []
+      acc[date] = {}
     }
-    acc[date].push(consumption)
+    if (!acc[date][adminId]) {
+      acc[date][adminId] = { adminName, items: [] }
+    }
+    acc[date][adminId].items.push(consumption)
     return acc
-  }, {} as Record<string, Consumption[]>)
+  }, {} as Record<string, Record<string, { adminName: string; items: Consumption[] }>>)
 
-  const groupedConsumptions = Object.entries(groupedByDate)
+  const groupedConsumptions = Object.entries(groupedByDateAndAdmin)
     .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime())
-    .map(([date, items]) => {
-      const productsInDate = items.reduce((acc, item) => {
-        const productId = item.product.id
-        if (!acc[productId]) {
-          acc[productId] = { product: item.product, totalQty: 0, totalPrice: 0, items: [] }
-        }
-        acc[productId].totalQty += item.quantity
-        acc[productId].totalPrice += item.quantity * item.product.price
-        acc[productId].items.push(item)
-        return acc
-      }, {} as Record<string, { product: Product; totalQty: number; totalPrice: number; items: Consumption[] }>)
+    .map(([date, adminGroups]) => {
+      const adminProducts = Object.entries(adminGroups).map(([adminId, { adminName, items }]) => {
+        const productsInAdmin = items.reduce((acc, item) => {
+          const productId = item.product.id
+          if (!acc[productId]) {
+            acc[productId] = { product: item.product, totalQty: 0, totalPrice: 0, items: [] }
+          }
+          acc[productId].totalQty += item.quantity
+          acc[productId].totalPrice += item.quantity * item.product.price
+          acc[productId].items.push(item)
+          return acc
+        }, {} as Record<string, { product: Product; totalQty: number; totalPrice: number; items: Consumption[] }>)
 
-      return { date, products: Object.values(productsInDate) }
+        return { adminId, adminName, products: Object.values(productsInAdmin) }
+      })
+
+      return { date, adminGroups: adminProducts }
     })
 
   const cartTotal = Object.entries(cart).reduce((sum, [productId, qty]) => {
@@ -399,46 +409,57 @@ export function ConsumptionList({ initialConsumptions, userId, onConsumptionsCha
           </Card>
         ) : (
           <>
-            {groupedConsumptions.map(({ date, products }) => (
-              <div key={date} className="space-y-2">
+            {groupedConsumptions.map(({ date, adminGroups }) => (
+              <div key={date} className="space-y-4">
                 <div className="bg-muted/50 px-4 py-2 rounded-lg">
                   <h4 className="font-semibold text-primary">{date}</h4>
                 </div>
-                {products.map(({ product, totalQty, totalPrice, items }) => (
-                  <Card key={product.id} className="shadow-professional hover-lift">
-                    <CardContent className="pt-6">
-                      <div className="flex gap-4">
-                        <img
-                          src={product.imageUrl || "/placeholder.svg"}
-                          alt={product.name}
-                          className="w-16 h-16 rounded-lg object-cover"
-                        />
-                        <div className="flex-1">
-                          <h3 className="font-semibold">{product.name}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            {totalQty} unidades × R$ {product.price.toFixed(2)}
-                          </p>
-                          {items.length > 0 && (
-                            <div className="mt-2 space-y-1">
-                              {items.slice(0, 3).map((item, index) => (
-                                <p key={index} className="text-xs text-muted-foreground">
-                                  {new Date(item.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} - {item.quantity} un.
-                                </p>
-                              ))}
-                              {items.length > 3 && (
-                                <p className="text-xs text-muted-foreground">
-                                  +{items.length - 3} compras anteriores
-                                </p>
+                {adminGroups.map(({ adminId, adminName, products }) => (
+                  <div key={adminId} className="space-y-2">
+                    <div className="bg-primary/10 px-3 py-2 rounded-md border-l-4 border-primary">
+                      <h5 className="font-medium text-primary">Catálogo de {adminName}</h5>
+                    </div>
+                    {products.map(({ product, totalQty, totalPrice, items }) => (
+                      <Card key={product.id} className="shadow-professional hover-lift">
+                        <CardContent className="pt-6">
+                          <div className="flex gap-4">
+                            <img
+                              src={product.imageUrl || "/placeholder.svg"}
+                              alt={product.name}
+                              className="w-16 h-16 rounded-lg object-cover"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = "/placeholder.svg";
+                              }}
+                            />
+                            <div className="flex-1">
+                              <h3 className="font-semibold">{product.name}</h3>
+                              <p className="text-sm text-muted-foreground">
+                                {totalQty} unidades × R$ {product.price.toFixed(2)}
+                              </p>
+                              {items.length > 0 && (
+                                <div className="mt-2 space-y-1">
+                                  {items.slice(0, 3).map((item, index) => (
+                                    <p key={index} className="text-xs text-muted-foreground">
+                                      {new Date(item.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} - {item.quantity} un.
+                                    </p>
+                                  ))}
+                                  {items.length > 3 && (
+                                    <p className="text-xs text-muted-foreground">
+                                      +{items.length - 3} compras anteriores
+                                    </p>
+                                  )}
+                                </div>
                               )}
                             </div>
-                          )}
-                        </div>
-                        <div className="text-right">
-                          <p className="text-xl font-bold text-primary">R$ {totalPrice.toFixed(2)}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                            <div className="text-right">
+                              <p className="text-xl font-bold text-primary">R$ {totalPrice.toFixed(2)}</p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
                 ))}
               </div>
             ))}

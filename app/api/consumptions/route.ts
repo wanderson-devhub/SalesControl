@@ -11,7 +11,11 @@ export async function GET(request: NextRequest) {
 
     const consumptions = await prisma.consumption.findMany({
       where: { userId: session.id },
-      include: { product: true },
+      include: {
+        product: {
+          include: { admin: true }
+        }
+      },
     })
 
     return NextResponse.json(consumptions)

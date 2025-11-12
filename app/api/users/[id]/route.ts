@@ -50,6 +50,7 @@ export async function GET(
             id: true,
             name: true,
             price: true,
+            imageUrl: true,
             admin: {
               select: {
                 id: true,
