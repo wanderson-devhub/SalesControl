@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Email/Nome de Guerra e senha são obrigatórios" }, { status: 400 })
     }
 
-    // Try to find user by email or warName (case-insensitive for warName)
+    // Try to find user by email or warName (case-insensitive for both)
     const users = await prisma.$queryRaw<
       Array<{
         id: string
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       }>
     >`
       SELECT * FROM users
-      WHERE email = ${trimmedEmail} OR LOWER(warName) = LOWER(${trimmedEmail})
+      WHERE LOWER(email) = ${trimmedEmail} OR LOWER(warName) = ${trimmedEmail}
       LIMIT 1
     `
 

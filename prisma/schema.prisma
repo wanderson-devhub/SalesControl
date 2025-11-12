@@ -28,6 +28,7 @@ model User {
 
   consumptions Consumption[]
   charges      Charge[]
+  products     Product[]
 
   @@map("users")
 }
@@ -38,7 +39,9 @@ model Product {
   price     Float
   available Boolean @default(true)
   imageUrl  String @default("https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=400&fit=crop")
+  adminId   String
 
+  admin       User         @relation(fields: [adminId], references: [id], onDelete: Cascade)
   consumptions Consumption[]
 
   @@map("products")

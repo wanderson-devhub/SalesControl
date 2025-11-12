@@ -9,23 +9,38 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Find the admin user
-    const admin = await prisma.user.findFirst({
-      where: { isAdmin: true },
-      select: {
-        pixKey: true,
-        pixQrCode: true,
-      },
-    })
+    if (session.isAdmin) {
+      // For admins, return their own PIX info
+      const admin = await prisma.user.findUnique({
+        where: { id: session.id },
+        select: {
+          pixKey: true,
+          pixQrCode: true,
+        },
+      })
 
-    if (!admin) {
-      return NextResponse.json({ error: "Admin not found" }, { status: 404 })
+      if (!admin) {
+        return NextResponse.json({ error: "Admin not found" }, { status: 404 })
+      }
+
+      return NextResponse.json({
+        pixKey: admin.pixKey,
+        pixQrCode: admin.pixQrCode,
+      })
+    } else {
+      // For users, return PIX info of all admins
+      const admins = await prisma.user.findMany({
+        where: { isAdmin: true },
+        select: {
+          id: true,
+          warName: true,
+          pixKey: true,
+          pixQrCode: true,
+        },
+      })
+
+      return NextResponse.json(admins)
     }
-
-    return NextResponse.json({
-      pixKey: admin.pixKey,
-      pixQrCode: admin.pixQrCode,
-    })
   } catch (error) {
     return NextResponse.json({ error: "Failed to fetch admin pix info" }, { status: 500 })
   }

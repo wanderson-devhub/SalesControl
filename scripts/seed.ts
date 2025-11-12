@@ -10,6 +10,22 @@ async function main() {
   await prisma.product.deleteMany().catch(() => {})
   await prisma.user.deleteMany().catch(() => {})
 
+  console.log("👑 Criando usuários...")
+
+  const admin = await prisma.user.create({
+    data: {
+      email: "admin@example.com",
+      password: await bcrypt.hash("admin123", 10),
+      warName: "Admin",
+      rank: "Tenente",
+      company: "3ª Cia",
+      phone: "11999999999",
+      isAdmin: true,
+      pixKey: "123.456.789-00",
+      pixQrCode: "https://via.placeholder.com/200?text=QR+Code",
+    },
+  })
+
   console.log("🌱 Inserindo produtos...")
 
   const PRODUCTS = [
@@ -48,26 +64,13 @@ async function main() {
   const products = await Promise.all(
     PRODUCTS.map((p) =>
       prisma.product.create({
-        data: p,
+        data: {
+          ...p,
+          adminId: admin.id,
+        },
       })
     )
   )
-
-  console.log("👑 Criando usuários...")
-
-  const admin = await prisma.user.create({
-    data: {
-      email: "admin@example.com",
-      password: await bcrypt.hash("admin123", 10),
-      warName: "Admin",
-      rank: "Tenente",
-      company: "3ª Cia",
-      phone: "11999999999",
-      isAdmin: true,
-      pixKey: "123.456.789-00",
-      pixQrCode: "https://via.placeholder.com/200?text=QR+Code",
-    },
-  })
 
   const user1 = await prisma.user.create({
     data: {

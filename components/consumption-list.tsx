@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Plus, ShoppingCart, Minus, ChevronDown } from "lucide-react"
+import { Plus, ShoppingCart, Minus, ChevronDown, Copy } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 
@@ -11,7 +11,14 @@ interface Product {
   id: string
   name: string
   price: number
+  available: boolean
   imageUrl: string
+  admin?: {
+    id: string
+    warName: string
+    pixKey?: string
+    pixQrCode?: string
+  }
 }
 
 interface Consumption {
@@ -19,6 +26,18 @@ interface Consumption {
   quantity: number
   product: Product
   createdAt: Date
+}
+
+interface GroupedProducts {
+  [adminId: string]: {
+    admin: {
+      id: string
+      warName: string
+      pixKey?: string
+      pixQrCode?: string
+    }
+    products: Product[]
+  }
 }
 
 interface ConsumptionListProps {
@@ -30,6 +49,7 @@ interface ConsumptionListProps {
 export function ConsumptionList({ initialConsumptions, userId, onConsumptionsChange }: ConsumptionListProps) {
   const [consumptions, setConsumptions] = useState<Consumption[]>(initialConsumptions)
   const [products, setProducts] = useState<Product[]>([])
+  const [groupedProducts, setGroupedProducts] = useState<GroupedProducts>({})
   const [cart, setCart] = useState<{ [productId: string]: number }>({})
   const [loading, setLoading] = useState(false)
 
@@ -42,7 +62,17 @@ export function ConsumptionList({ initialConsumptions, userId, onConsumptionsCha
     try {
       const response = await fetch("/api/products")
       const data = await response.json()
-      setProducts(data)
+
+      // For users, data is grouped by admin
+      if (typeof data === 'object' && !Array.isArray(data)) {
+        setGroupedProducts(data)
+        // Flatten grouped products for cart functionality
+        const flattenedProducts = Object.values(data).flatMap((group: any) => group.products)
+        setProducts(flattenedProducts)
+      } else {
+        // For admins, data is array
+        setProducts(data)
+      }
     } catch (error) {
       console.error("Error fetching products:", error)
     }
@@ -120,6 +150,15 @@ export function ConsumptionList({ initialConsumptions, userId, onConsumptionsCha
     setCart({ ...cart, [productId]: newQty })
   }
 
+  async function copyToClipboard(text: string) {
+    try {
+      await navigator.clipboard.writeText(text)
+      // You could add a toast notification here if desired
+    } catch (error) {
+      console.error("Failed to copy to clipboard:", error)
+    }
+  }
+
   // Group consumptions by date
   const groupedByDate = consumptions.reduce((acc, consumption) => {
     const date = new Date(consumption.createdAt).toLocaleDateString('pt-BR')
@@ -163,51 +202,147 @@ export function ConsumptionList({ initialConsumptions, userId, onConsumptionsCha
           <CardDescription>Selecione produtos e quantidades</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-5 mb-6">
-            {products.map((product) => (
-              <div key={product.id} className="flex flex-col gap-2">
-                <div className="relative overflow-hidden rounded-lg bg-muted border border-border hover:border-primary transition-colors hover-lift">
-                  <img
-                    src={product.imageUrl || "/placeholder.svg"}
-                    alt={product.name}
-                    className="w-full h-24 object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <span className="text-white text-xs font-semibold text-center px-1">
-                      R$ {product.price.toFixed(2)}
-                    </span>
+          {Object.keys(groupedProducts).length > 0 ? (
+            <div className="space-y-8">
+              {Object.entries(groupedProducts).map(([adminId, { admin, products: adminProducts }]) => (
+                <div key={adminId} className="space-y-4">
+                  <div className="border-t border-border pt-6 first:border-t-0 first:pt-0">
+                    <Card className="mb-4 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
+                      <CardContent className="pt-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold text-lg">
+                              {admin.warName.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <h3 className="text-xl font-bold text-primary">Catálogo de {admin.warName}</h3>
+                              {admin.pixKey && (
+                                <div className="flex items-center gap-2">
+                                  <p className="text-sm text-muted-foreground">Chave Pix:</p>
+                                  <div className="flex items-center gap-1">
+                                    <span className="font-mono bg-primary/20 px-2 py-1 rounded text-primary font-semibold">{admin.pixKey}</span>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => copyToClipboard(admin.pixKey!)}
+                                      className="h-6 w-6 p-0 hover:bg-primary/10"
+                                    >
+                                      <Copy className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          {admin.pixQrCode && (
+                            <div className="text-right">
+                              <p className="text-sm font-semibold text-primary mb-2">QR Code Pix</p>
+                              <img
+                                src={admin.pixQrCode}
+                                alt={`QR Code Pix de ${admin.warName}`}
+                                className="w-20 h-20 object-contain border border-primary/20 rounded"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
+                      {adminProducts.map((product) => (
+                        <div key={product.id} className="flex flex-col gap-2">
+                          <div className="relative overflow-hidden rounded-lg bg-muted border border-border hover:border-primary transition-colors hover-lift">
+                            <img
+                              src={product.imageUrl || "/placeholder.svg"}
+                              alt={product.name}
+                              className="w-full h-24 object-cover"
+                            />
+                            <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <span className="text-white text-xs font-semibold text-center px-1">
+                                R$ {product.price.toFixed(2)}
+                              </span>
+                            </div>
+                          </div>
+                          <h4 className="text-sm font-semibold line-clamp-2">{product.name}</h4>
+                          <div className="flex items-center gap-1">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => adjustQuantity(product.id, -1)}
+                              className="h-8 w-8 p-0"
+                            >
+                              <Minus className="h-3 w-3" />
+                            </Button>
+                            <Input
+                              type="number"
+                              min="0"
+                              max="99"
+                              value={cart[product.id] || 0}
+                              onChange={(e) => setCart({ ...cart, [product.id]: Number.parseInt(e.target.value) || 0 })}
+                              className="h-8 text-center text-xs w-12 p-1"
+                            />
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => adjustQuantity(product.id, 1)}
+                              className="h-8 w-8 p-0"
+                            >
+                              <Plus className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-                <h4 className="text-sm font-semibold line-clamp-2">{product.name}</h4>
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => adjustQuantity(product.id, -1)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <Minus className="h-3 w-3" />
-                  </Button>
-                  <Input
-                    type="number"
-                    min="0"
-                    max="99"
-                    value={cart[product.id] || 0}
-                    onChange={(e) => setCart({ ...cart, [product.id]: Number.parseInt(e.target.value) || 0 })}
-                    className="h-8 text-center text-xs w-12 p-1"
-                  />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => adjustQuantity(product.id, 1)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <Plus className="h-3 w-3" />
-                  </Button>
+              ))}
+            </div>
+          ) : (
+            <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-5 mb-6">
+              {products.map((product) => (
+                <div key={product.id} className="flex flex-col gap-2">
+                  <div className="relative overflow-hidden rounded-lg bg-muted border border-border hover:border-primary transition-colors hover-lift">
+                    <img
+                      src={product.imageUrl || "/placeholder.svg"}
+                      alt={product.name}
+                      className="w-full h-24 object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <span className="text-white text-xs font-semibold text-center px-1">
+                        R$ {product.price.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                  <h4 className="text-sm font-semibold line-clamp-2">{product.name}</h4>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => adjustQuantity(product.id, -1)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Minus className="h-3 w-3" />
+                    </Button>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="99"
+                      value={cart[product.id] || 0}
+                      onChange={(e) => setCart({ ...cart, [product.id]: Number.parseInt(e.target.value) || 0 })}
+                      className="h-8 text-center text-xs w-12 p-1"
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => adjustQuantity(product.id, 1)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Plus className="h-3 w-3" />
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           <div className="border-t border-border pt-4">
             <div className="flex justify-between items-center mb-4">

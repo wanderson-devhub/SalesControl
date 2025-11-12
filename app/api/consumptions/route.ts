@@ -29,13 +29,14 @@ export async function POST(request: NextRequest) {
 
     const { productId, quantity } = await request.json()
 
+    // Verify the product belongs to an admin (no change needed for consumption creation)
     const consumption = await prisma.consumption.create({
       data: {
         userId: session.id,
         productId,
         quantity,
       },
-      include: { product: true },
+      include: { product: { include: { admin: true } } },
     })
 
     return NextResponse.json(consumption, { status: 201 })

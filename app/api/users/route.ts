@@ -9,8 +9,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    // Get all users except admins
     const users = await prisma.user.findMany({
-      where: { isAdmin: false },
+      where: {
+        isAdmin: false,
+      },
       select: {
         id: true,
         email: true,
@@ -21,11 +24,16 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    // Calculate totals for each user
+    // Calculate totals for each user based only on this admin's products
     const usersWithTotals = await Promise.all(
       users.map(async (user) => {
         const consumptions = await prisma.consumption.findMany({
-          where: { userId: user.id },
+          where: {
+            userId: user.id,
+            product: {
+              adminId: session.id,
+            },
+          },
           include: { product: true },
         })
 

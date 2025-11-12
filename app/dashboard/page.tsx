@@ -4,9 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Header } from "@/components/header"
 import { ConsumptionList } from "@/components/consumption-list"
-import { Button } from "@/components/ui/button"
-import { Copy } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+
 
 interface Consumption {
   id: string
@@ -16,7 +14,14 @@ interface Consumption {
     id: string
     name: string
     price: number
+    available: boolean
     imageUrl: string
+    admin?: {
+      id: string
+      warName: string
+      pixKey?: string
+      pixQrCode?: string
+    }
   }
 }
 
@@ -28,17 +33,12 @@ interface User {
   consumptions: Consumption[]
 }
 
-interface AdminPix {
-  pixKey?: string
-  pixQrCode?: string
-}
+
 
 export default function DashboardPage() {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
-  const [adminPix, setAdminPix] = useState<AdminPix | null>(null)
   const [loading, setLoading] = useState(true)
-  const { toast } = useToast()
 
   useEffect(() => {
     async function loadData() {
@@ -59,9 +59,7 @@ export default function DashboardPage() {
         const userData = await fetch("/api/users/" + session.id).then(res => res.json())
         setUser(userData)
 
-        // Fetch admin's pix info
-        const adminPixData = await fetch("/api/admin/pix").then(res => res.json())
-        setAdminPix(adminPixData)
+
       } catch (error) {
         console.error("Error loading data:", error)
         router.push("/login")
@@ -89,6 +87,17 @@ export default function DashboardPage() {
 
   const total = user.consumptions?.reduce((sum, c) => sum + c.quantity * c.product.price, 0) || 0
 
+  // Calculate totals per admin
+  const totalsByAdmin = user.consumptions?.reduce((acc, c) => {
+    const adminId = c.product.admin?.id || 'unknown'
+    const adminName = c.product.admin?.warName || 'Admin Desconhecido'
+    if (!acc[adminId]) {
+      acc[adminId] = { name: adminName, total: 0 }
+    }
+    acc[adminId].total += c.quantity * c.product.price
+    return acc
+  }, {} as Record<string, { name: string; total: number }>) || {}
+
   // Get current date in Portuguese format
   const currentDate = new Date()
   const monthNames = [
@@ -111,45 +120,7 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Pix Key Section */}
-        {(adminPix?.pixKey || adminPix?.pixQrCode) && (
-          <div className="bg-card border border-border rounded-lg p-6 shadow-professional hover-lift animate-slide-up mb-8">
-            <div className="text-center">
-              <h2 className="text-xl font-semibold mb-4">Chave Pix</h2>
-              {adminPix.pixKey && (
-                <div className="mb-4">
-                  <div className="bg-primary/10 px-6 py-4 rounded-lg border border-primary/20 inline-block">
-                    <code className="text-lg font-mono text-primary">
-                      {adminPix.pixKey}
-                    </code>
-                  </div>
-                  <Button
-                    onClick={async () => {
-                      await navigator.clipboard.writeText(adminPix.pixKey!)
-                      toast({
-                        description: "Chave Pix copiada!",
-                      })
-                    }}
-                    variant="outline"
-                    size="sm"
-                    className="mt-2 ml-2"
-                  >
-                    <Copy className="h-4 w-4" />
-                  </Button>
-                </div>
-              )}
-              {adminPix.pixQrCode && (
-                <div className="mt-4">
-                  <img
-                    src={adminPix.pixQrCode}
-                    alt="QR Code Pix"
-                    className="w-32 h-32 mx-auto rounded-lg"
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-        )}
+
 
         <div className="grid gap-4 mb-8 grid-cols-1 md:grid-cols-1">
           <div className="bg-card border border-border rounded-lg p-6 shadow-professional hover-lift animate-slide-up">
@@ -157,6 +128,11 @@ export default function DashboardPage() {
               <div>
                 <p className="text-muted-foreground">Total a Pagar</p>
                 <p className="text-3xl font-bold text-primary">R$ {total.toFixed(2)}</p>
+                {Object.values(totalsByAdmin).map(({ name, total: adminTotal }) => (
+                  <p key={name} className="text-sm text-muted-foreground mt-1">
+                    A pagar para {name}: R$ {adminTotal.toFixed(2)}
+                  </p>
+                ))}
               </div>
               <div className="text-right">
                 <p className="text-muted-foreground">Itens Consumidos</p>
