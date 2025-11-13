@@ -12,6 +12,8 @@ Este é um sistema web completo construído com **Next.js 16**, **React 19**, **
 - **Dashboard pessoal** com resumo de consumo e dívidas
 - **Histórico de consumos** com detalhes de produtos
 - **Cálculo automático de totais** por administrador
+- **Sistema de notificações** em tempo real
+- **Atualização automática** dos dados a cada 10 segundos
 - **Interface responsiva** otimizada para mobile e desktop
 
 #### Para Administradores
@@ -21,6 +23,8 @@ Este é um sistema web completo construído com **Next.js 16**, **React 19**, **
 - **Sistema de cobranças** integrado com WhatsApp
 - **Gestão de pagamentos PIX** com QR codes
 - **Relatórios de consumo** e lucros
+- **Notificações de compras** confirmadas pelos usuários
+- **Sistema de zeramento de dívidas** com notificação automática
 
 ## 🏗️ Arquitetura Técnica
 
@@ -89,6 +93,18 @@ model Charge {
   userId    String
   amount    Float
   reason    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+-- Notificações do sistema
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   -- 'debt_cleared' ou 'purchase_confirmed'
+  message   String
+  isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
