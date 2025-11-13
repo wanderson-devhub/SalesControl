@@ -57,7 +57,6 @@ async function main() {
       email: "admin1@example.com",
       warName: "Admin 1",
       rank: "1º Tenente",
-      company: "1ª Cia",
       phone: "11999999991",
       pixKey: "123.456.789-01",
       pixQrCode: "https://via.placeholder.com/200?text=QR+Code+1",
@@ -66,7 +65,6 @@ async function main() {
       email: "admin2@example.com",
       warName: "Admin 2",
       rank: "2º Tenente",
-      company: "2ª Cia",
       phone: "11999999992",
       pixKey: "123.456.789-02",
       pixQrCode: "https://via.placeholder.com/200?text=QR+Code+2",
@@ -103,7 +101,6 @@ async function main() {
   console.log("👥 Criando 2000 usuários...")
 
   const ranks = ["Soldado", "Cabo", "3º Sargento", "2º Sargento", "1º Sargento", "2º Tenente", "1º Tenente"]
-  const companies = ["1ª Cia", "2ª Cia", "3ª Cia", "CCAp", "Base ADM"]
 
   const users = []
   for (let i = 1; i <= 2000; i++) {
@@ -113,7 +110,6 @@ async function main() {
         password: await bcrypt.hash("user123", 10),
         warName: `Usuário ${i}`,
         rank: ranks[Math.floor(Math.random() * ranks.length)],
-        company: companies[Math.floor(Math.random() * companies.length)],
         phone: `11${Math.floor(100000000 + Math.random() * 900000000)}`, // Gera telefone aleatório de 11 dígitos começando com 11
         isAdmin: false,
       },

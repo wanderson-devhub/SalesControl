@@ -5,10 +5,10 @@ import { createSession } from "@/lib/auth"
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password, warName, rank, company, phone } = await request.json()
+    const { email, password, warName, rank, phone } = await request.json()
 
     // Validate input
-    if (!email || !password || !warName || !rank || !company || !phone) {
+    if (!email || !password || !warName || !rank || !phone) {
       return NextResponse.json({ error: "Todos os campos são obrigatórios" }, { status: 400 })
     }
 
@@ -42,7 +42,6 @@ export async function POST(request: NextRequest) {
         password: hashedPassword,
         warName,
         rank,
-        company,
         phone,
       },
     })

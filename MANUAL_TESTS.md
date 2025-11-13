@@ -56,11 +56,10 @@
 
 ### 1.3 Cadastro (/register)
 - [ ] Formulário de cadastro é exibido
-- [ ] Campos obrigatórios: Nome de Guerra, Posto/Graduação, Companhia, Telefone, Email, Senha
+- [ ] Campos obrigatórios: Nome de Guerra, Posto/Graduação, Telefone, Email, Senha
 - [ ] Formatação automática do telefone (máscara)
 - [ ] Validação de email
 - [ ] Select de Posto/Graduação funciona
-- [ ] Select de Companhia funciona
 - [ ] Senha com mínimo 6 caracteres
 - [ ] Cadastro bem-sucedido redireciona para `/dashboard`
 - [ ] Email duplicado mostra erro
@@ -137,11 +136,9 @@
 
 ### 3.4 Lista de Usuários
 - [ ] Todos os usuários são listados
-- [ ] Filtros por companhia funcionam
 - [ ] Filtros por posto/graduação funcionam
 - [ ] Busca por nome funciona
 - [ ] Dívidas por usuário são calculadas
-- [ ] Totais por companhia corretos
 - [ ] Botão WhatsApp abre link correto
 - [ ] Botão PIX mostra QR code
 - [ ] "Zerar Dívida" funciona e envia notificação
@@ -193,7 +190,7 @@
 
 ### 5.2 Formulário de Perfil
 - [ ] Campos preenchidos com dados atuais
-- [ ] Campos editáveis: Nome de Guerra, Posto/Graduação, Companhia, Telefone, Email
+- [ ] Campos editáveis: Nome de Guerra, Posto/Graduação, Telefone, Email
 - [ ] Senha não é mostrada (apenas alteração)
 - [ ] Campos PIX: Chave PIX e QR Code
 - [ ] Validações funcionam
@@ -290,7 +287,6 @@
 
 ### 9.2 Lista de Usuários
 - [ ] Dívidas por usuário corretas
-- [ ] Totais por companhia corretos
 - [ ] Filtros aplicam corretamente
 
 ### 9.3 Performance

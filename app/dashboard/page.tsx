@@ -29,6 +29,7 @@ interface Consumption {
 interface User {
   id: string
   warName: string
+  rank: string
   pixKey?: string
   pixQrCode?: string
   consumptions: Consumption[]
@@ -118,7 +119,7 @@ export default function DashboardPage() {
         {/* Welcome message */}
         <div className="mb-6 md:mb-8 text-center">
           <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
-            Bem-vindo, {user.warName}!
+            Bem-vindo, {user.rank} {user.warName}!
           </h1>
           <p className="text-base sm:text-lg text-muted-foreground">
             {formattedDate}

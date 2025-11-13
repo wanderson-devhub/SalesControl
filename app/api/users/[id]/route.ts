@@ -27,7 +27,6 @@ export async function GET(
         email: true,
         warName: true,
         rank: true,
-        company: true,
         phone: true,
         pixKey: true,
         pixQrCode: true,
@@ -98,7 +97,7 @@ export async function PUT(
     }
 
     const body = await request.json()
-    const { warName, rank, company, phone, pixKey, pixQrCode } = body
+    const { warName, rank, phone, pixKey, pixQrCode } = body
 
     // Validate required fields
     if (!warName || !phone) {
@@ -111,7 +110,6 @@ export async function PUT(
       data: {
         warName,
         rank,
-        company,
         phone,
         ...(session.isAdmin && { pixKey, pixQrCode }), // Only admins can update pix info
       },
@@ -120,7 +118,6 @@ export async function PUT(
         email: true,
         warName: true,
         rank: true,
-        company: true,
         phone: true,
         pixKey: true,
         pixQrCode: true,

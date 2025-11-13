@@ -31,7 +31,6 @@ export function ProfileForm({ user }: ProfileFormProps) {
   const [formData, setFormData] = useState({
     warName: user.warName,
     rank: user.rank || "",
-    company: user.company || "",
     phone: user.phone,
     ...(user.isAdmin && {
       pixKey: user.pixKey || "",
@@ -180,26 +179,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="company">Companhia</Label>
-              <Select
-                value={formData.company}
-                onValueChange={(value) =>
-                  setFormData({ ...formData, company: value })
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecione a companhia" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1ª Cia">1ª Cia</SelectItem>
-                  <SelectItem value="2ª Cia">2ª Cia</SelectItem>
-                  <SelectItem value="3ª Cia">3ª Cia</SelectItem>
-                  <SelectItem value="CCAp">CCAp</SelectItem>
-                  <SelectItem value="Base ADM">Base ADM</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+
           </div>
 
           <div className="space-y-2">

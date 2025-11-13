@@ -19,7 +19,6 @@ export async function GET(request: NextRequest) {
         email: true,
         warName: true,
         rank: true,
-        company: true,
         phone: true,
       },
     })

@@ -26,7 +26,6 @@ export async function POST(request: NextRequest) {
         password: string
         warName: string
         rank: string
-        company: string
         phone: string
         isAdmin: boolean
         pixKey: string | null

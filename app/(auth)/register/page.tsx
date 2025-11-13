@@ -32,7 +32,6 @@ export default function RegisterPage() {
     password: "",
     warName: "",
     rank: "",
-    company: "",
     phone: "",
   });
   const [agreeToTerms, setAgreeToTerms] = useState(false);
@@ -145,26 +144,7 @@ export default function RegisterPage() {
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="company">Companhia</Label>
-              <Select
-                value={formData.company}
-                onValueChange={(value) =>
-                  setFormData((prev) => ({ ...prev, company: value }))
-                }
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecione a companhia" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1ª Cia">1ª Cia</SelectItem>
-                  <SelectItem value="2ª Cia">2ª Cia</SelectItem>
-                  <SelectItem value="3ª Cia">3ª Cia</SelectItem>
-                  <SelectItem value="CCAp">CCAp</SelectItem>
-                  <SelectItem value="Base ADM">Base ADM</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+
 
             <div className="space-y-2">
               <Label htmlFor="phone">Telefone</Label>

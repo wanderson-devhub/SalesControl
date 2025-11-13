@@ -20,7 +20,6 @@ describe('AdminUsersList Component', () => {
       email: 'user1@example.com',
       warName: 'Alpha',
       rank: 'Soldado',
-      company: 'A',
       phone: '11987654321',
       total: 100.5,
     },
@@ -29,7 +28,6 @@ describe('AdminUsersList Component', () => {
       email: 'user2@example.com',
       warName: 'Bravo',
       rank: 'Cabo',
-      company: 'B',
       phone: '11987654322',
       total: 50.0,
     },
@@ -38,7 +36,6 @@ describe('AdminUsersList Component', () => {
       email: 'user3@example.com',
       warName: 'Charlie',
       rank: 'Soldado',
-      company: 'A',
       phone: '11987654323',
       total: 0,
     },
@@ -121,26 +118,6 @@ describe('AdminUsersList Component', () => {
 
       expect(screen.getByText('Bravo')).toBeInTheDocument()
       expect(screen.queryByText('Alpha')).not.toBeInTheDocument()
-    })
-
-    it('should filter users by company', async () => {
-      const user = userEvent.setup()
-      render(<AdminUsersList adminId="admin1" />)
-
-      await waitFor(() => {
-        expect(screen.getByText('Alpha')).toBeInTheDocument()
-      })
-
-      const companySelects = screen.getAllByRole('combobox')
-      await user.click(companySelects[1]) // Company select
-
-      await waitFor(() => {
-        const companyOptions = screen.getAllByRole('option')
-        const companyAOption = companyOptions.find(
-          (opt) => opt.textContent === 'A'
-        )
-        expect(companyAOption).toBeInTheDocument()
-      })
     })
 
     it('should filter users by rank', async () => {
@@ -258,7 +235,6 @@ describe('AdminUsersList Component', () => {
             email: `user${i + 4}@example.com`,
             warName: `User${i + 4}`,
             rank: 'Soldado',
-            company: 'A',
             phone: '11987654321',
             total: 10 + i,
           })),
@@ -461,7 +437,6 @@ describe('AdminUsersList Component', () => {
             email: null,
             warName: null,
             rank: 'Soldado',
-            company: 'A',
             phone: '11987654321',
             total: 100.5,
           },

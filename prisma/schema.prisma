@@ -16,7 +16,6 @@ model User {
   password          String
   warName           String
   rank              String
-  company           String
   phone             String     @unique
   isAdmin           Boolean    @default(false)
   pixKey            String?

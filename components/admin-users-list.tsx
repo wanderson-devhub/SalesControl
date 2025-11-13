@@ -37,7 +37,6 @@ interface User {
   email: string;
   warName: string;
   rank: string;
-  company: string;
   phone: string;
   total: number;
 }
@@ -52,7 +51,7 @@ export function AdminUsersList({ adminId }: AdminUsersListProps) {
   const [sortOrder, setSortOrder] = useState<
     "asc" | "desc" | "random" | "highest" | "lowest"
   >("asc");
-  const [filterCompany, setFilterCompany] = useState<string>("all");
+
   const [filterRank, setFilterRank] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [expandedUser, setExpandedUser] = useState<string | null>(null);
@@ -104,9 +103,7 @@ export function AdminUsersList({ adminId }: AdminUsersListProps) {
       );
     }
 
-    if (filterCompany !== "all") {
-      filtered = filtered.filter((u) => u.company === filterCompany);
-    }
+
 
     if (filterRank !== "all") {
       filtered = filtered.filter((u) => u.rank === filterRank);
@@ -182,12 +179,9 @@ export function AdminUsersList({ adminId }: AdminUsersListProps) {
   // Reset pagination when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, filterCompany, filterRank, sortOrder]);
+  }, [searchTerm, filterRank, sortOrder]);
 
   const filteredUsers = getFilteredAndSortedUsers();
-  const companies = [
-    ...new Set(users.map((u) => u.company).filter(Boolean)),
-  ].sort();
   const ranks = [...new Set(users.map((u) => u.rank).filter(Boolean))].sort();
 
   if (loading) {
@@ -240,24 +234,7 @@ export function AdminUsersList({ adminId }: AdminUsersListProps) {
             </Select>
           </div>
 
-          <div>
-            <label className="text-sm font-medium text-muted-foreground mb-2 block">
-              Companhia
-            </label>
-            <Select value={filterCompany} onValueChange={setFilterCompany}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas</SelectItem>
-                {companies.map((company) => (
-                  <SelectItem key={company} value={company}>
-                    {company}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+
 
           <div>
             <label className="text-sm font-medium text-muted-foreground mb-2 block">
@@ -347,7 +324,7 @@ export function AdminUsersList({ adminId }: AdminUsersListProps) {
                               {user.warName}
                             </h3>
                             <p className="text-sm text-muted-foreground">
-                              {user.rank} • {user.company}
+                              {user.rank}
                             </p>
                           </div>
                           <div className="text-right mr-4">
@@ -573,7 +550,7 @@ export function AdminUsersList({ adminId }: AdminUsersListProps) {
                               {user.warName}
                             </h3>
                             <p className="text-sm text-muted-foreground">
-                              {user.rank} • {user.company}
+                              {user.rank}
                             </p>
                           </div>
                           <div className="text-right mr-4">

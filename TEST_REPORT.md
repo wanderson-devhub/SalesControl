@@ -31,7 +31,7 @@ Este projeto foi submetido a testes unitários abrangentes para garantir confiab
 - **Correção**: Adicionado `typeof window !== "undefined"` check
 - **Impacto**: Código agora funciona tanto em browser quanto em SSR
 
-- **Bug**: Companies/ranks com valores null causavam problemas
+- **Bug**: ranks com valores null causavam problemas
 - **Correção**: Adicionado `.filter(Boolean)` para remover null values
 - **Impacto**: Listas de filtro agora sempre válidas
 
@@ -65,7 +65,6 @@ Este projeto foi submetido a testes unitários abrangentes para garantir confiab
 - ✅ Carregamento inicial e estado de loading
 - ✅ Fetch de usuários na montagem
 - ✅ Filtro por busca (nome e email)
-- ✅ Filtro por companhia
 - ✅ Filtro por graduação
 - ✅ Ordenação (A-Z, Z-A, Aleatório, Maior/Menor valor)
 - ✅ Paginação correta

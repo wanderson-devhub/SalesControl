@@ -5,7 +5,6 @@ CREATE TABLE "users" (
     "password" TEXT NOT NULL,
     "warName" TEXT NOT NULL,
     "rank" TEXT NOT NULL,
-    "company" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
     "isAdmin" BOOLEAN NOT NULL DEFAULT false,
     "pixKey" TEXT,

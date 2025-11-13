@@ -26,7 +26,6 @@ describe('Login API Route', () => {
     isAdmin: false,
     password: '$2a$10$...',
     rank: 'Soldado',
-    company: 'A',
     phone: '11987654321',
     total: 0,
     resetToken: null,

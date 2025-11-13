@@ -14,7 +14,6 @@ describe('Auth Functions', () => {
     isAdmin: false,
     password: 'hashed-password',
     rank: 'Soldado',
-    company: 'A',
     phone: '11987654321',
     total: 0,
     resetToken: null,

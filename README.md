@@ -47,7 +47,6 @@ model User {
   password          String
   warName           String     -- Nome de guerra
   rank              String     -- Graduação/patente
-  company           String     -- Companhia
   phone             String     @unique
   isAdmin           Boolean    @default(false)
   pixKey            String?    -- Chave PIX
@@ -175,7 +174,7 @@ model Notification {
 
 ### Fluxo de Administrador
 1. **Gerenciar Produtos**: Adicione/edite produtos disponíveis
-2. **Controlar Usuários**: Visualize dívidas, filtre por companhia/patente
+2. **Controlar Usuários**: Visualize dívidas, filtre por patente
 3. **Cobrar Dívidas**: Use integração WhatsApp para cobranças
 4. **Acompanhar Lucros**: Dashboard com métricas de vendas
 
@@ -328,7 +327,7 @@ Criei uma documentação completa e abrangente para o seu sistema de controle de
 
 ### **Informações Gerais**
 - Visão geral do sistema e suas funcionalidades
-- Contexto militar (baseado nos campos warName, rank, company)
+- Contexto militar (baseado nos campos warName, rank)
 - Arquitetura técnica completa
 
 ### **Setup e Instalação**
