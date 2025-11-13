@@ -190,7 +190,7 @@ export function AdminUsersList({ adminId }: AdminUsersListProps) {
       </div>
 
       <div className="bg-card border border-border rounded-lg p-4 mb-6 shadow-professional hover-lift">
-        <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           <div>
             <label className="text-sm font-medium text-muted-foreground mb-2 block">
               Pesquisar

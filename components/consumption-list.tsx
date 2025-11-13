@@ -228,9 +228,9 @@ export function ConsumptionList({ initialConsumptions, userId, onConsumptionsCha
                 <div key={adminId} className="space-y-4">
                   <div className="border-t border-border pt-6 first:border-t-0 first:pt-0">
                     <Card className="mb-4 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
-                      <CardContent className="pt-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
+                      <CardContent>
+                        <div className="flex flex-col w-full justify-between gap-4 items-center">
+                          <div className="flex items-start gap-3 w-full">
                             <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-bold text-lg">
                               {admin.warName.charAt(0).toUpperCase()}
                             </div>
@@ -255,7 +255,7 @@ export function ConsumptionList({ initialConsumptions, userId, onConsumptionsCha
                             </div>
                           </div>
                           {admin.pixQrCode && (
-                            <div className="text-right">
+                            <div className="text-right self-stretch flex flex-col w-full items-end">
                               <p className="text-sm font-semibold text-primary mb-2">QR Code Pix</p>
                               <img
                                 src={admin.pixQrCode}
@@ -267,14 +267,14 @@ export function ConsumptionList({ initialConsumptions, userId, onConsumptionsCha
                         </div>
                       </CardContent>
                     </Card>
-                    <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
+                    <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                       {adminProducts.map((product) => (
                         <div key={product.id} className="flex flex-col gap-2">
                           <div className="relative overflow-hidden rounded-lg bg-muted border border-border hover:border-primary transition-colors hover-lift">
                             <img
                               src={product.imageUrl || "/placeholder.svg"}
                               alt={product.name}
-                              className="w-full h-24 object-cover"
+                              className="w-full h-20 sm:h-24 object-cover"
                             />
                           </div>
                           <p className="text-sm font-bold text-primary text-center">
@@ -286,7 +286,7 @@ export function ConsumptionList({ initialConsumptions, userId, onConsumptionsCha
                               variant="outline"
                               size="sm"
                               onClick={() => adjustQuantity(product.id, -1)}
-                              className="h-8 w-8 p-0"
+                              className="h-7 w-7 sm:h-8 sm:w-8 p-0"
                             >
                               <Minus className="h-3 w-3" />
                             </Button>
@@ -296,13 +296,13 @@ export function ConsumptionList({ initialConsumptions, userId, onConsumptionsCha
                               max="99"
                               value={cart[product.id] || 0}
                               onChange={(e) => setCart({ ...cart, [product.id]: Number.parseInt(e.target.value) || 0 })}
-                              className="h-8 text-center text-xs w-12 p-1"
+                              className="h-7 sm:h-8 text-center text-xs w-10 sm:w-12 p-1"
                             />
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => adjustQuantity(product.id, 1)}
-                              className="h-8 w-8 p-0"
+                              className="h-7 w-7 sm:h-8 sm:w-8 p-0"
                             >
                               <Plus className="h-3 w-3" />
                             </Button>

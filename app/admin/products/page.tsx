@@ -227,14 +227,14 @@ export default function ProductsPage() {
         </Dialog>
       </div>
 
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
         {products.map((product) => (
-          <Card key={product.id} className={`${product.available ? "" : "opacity-60"}`}>
+          <Card key={product.id} className={`${product.available ? "" : "opacity-60"} hover-lift`}>
             <CardContent className="pt-4">
               <img
                 src={product.imageUrl || "/placeholder.svg"}
                 alt={product.name}
-                className="w-full h-32 object-cover rounded-lg mb-4"
+                className="w-full h-24 sm:h-32 object-cover rounded-lg mb-4"
               />
               <h3 className="font-semibold text-lg mb-1">{product.name}</h3>
               <p className="text-primary font-bold mb-4">R$ {product.price.toFixed(2)}</p>
@@ -246,7 +246,7 @@ export default function ProductsPage() {
                 <Switch checked={product.available} onCheckedChange={() => handleToggleAvailable(product)} />
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-col sm:flex-row">
                 <Button variant="outline" size="sm" onClick={() => openEditDialog(product)} className="flex-1 gap-2">
                   <Edit2 className="h-4 w-4" />
                   Editar

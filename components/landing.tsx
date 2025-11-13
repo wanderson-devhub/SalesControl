@@ -50,19 +50,19 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted">
       {/* Hero Section */}
-      <section className="relative py-20 px-4">
+      <section className="relative py-12 md:py-20 px-4">
         <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-foreground mb-4 md:mb-6">
             Controle de Estoque
           </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground mb-6 md:mb-8 max-w-3xl mx-auto">
             Gerencie seu inventário de forma eficiente e intuitiva. Controle produtos, consumos e usuários com facilidade.
           </p>
-          <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
-            <Button size="lg" className="text-lg px-8 py-3">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button size="lg" className="text-base md:text-lg px-6 md:px-8 py-3 w-full sm:w-auto">
               Começar Agora
             </Button>
-            <Button variant="outline" size="lg" className="text-lg px-8 py-3">
+            <Button variant="outline" size="lg" className="text-base md:text-lg px-6 md:px-8 py-3 w-full sm:w-auto">
               Saiba Mais
             </Button>
           </div>
@@ -70,39 +70,39 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 px-4 bg-background/50">
+      <section className="py-12 md:py-16 px-4 bg-background/50">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Funcionalidades</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="text-center p-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-8 md:mb-12">Funcionalidades</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+            <Card className="text-center p-4 md:p-6">
               <CardHeader>
-                <Package className="w-12 h-12 mx-auto mb-4 text-primary" />
-                <CardTitle>Gerenciamento de Produtos</CardTitle>
+                <Package className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-4 text-primary" />
+                <CardTitle className="text-lg md:text-xl">Gerenciamento de Produtos</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription>
+                <CardDescription className="text-sm md:text-base">
                   Adicione, edite e organize seus produtos com categorias e informações detalhadas.
                 </CardDescription>
               </CardContent>
             </Card>
-            <Card className="text-center p-6">
+            <Card className="text-center p-4 md:p-6">
               <CardHeader>
-                <BarChart3 className="w-12 h-12 mx-auto mb-4 text-primary" />
-                <CardTitle>Controle de Consumo</CardTitle>
+                <BarChart3 className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-4 text-primary" />
+                <CardTitle className="text-lg md:text-xl">Controle de Consumo</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription>
+                <CardDescription className="text-sm md:text-base">
                   Monitore o consumo de produtos e gere relatórios detalhados para melhor gestão.
                 </CardDescription>
               </CardContent>
             </Card>
-            <Card className="text-center p-6">
+            <Card className="text-center p-4 md:p-6 sm:col-span-2 md:col-span-1">
               <CardHeader>
-                <Users className="w-12 h-12 mx-auto mb-4 text-primary" />
-                <CardTitle>Gestão de Usuários</CardTitle>
+                <Users className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-4 text-primary" />
+                <CardTitle className="text-lg md:text-xl">Gestão de Usuários</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription>
+                <CardDescription className="text-sm md:text-base">
                   Administre usuários, permissões e acessos de forma segura e eficiente.
                 </CardDescription>
               </CardContent>

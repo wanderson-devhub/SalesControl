@@ -111,32 +111,30 @@ export default function DashboardPage() {
       <Header userName={user.warName} />
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Welcome message */}
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
+        <div className="mb-6 md:mb-8 text-center">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
             Bem-vindo, {user.warName}!
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-base sm:text-lg text-muted-foreground">
             Hoje é {formattedDate}
           </p>
         </div>
 
-
-
-        <div className="grid gap-4 mb-8 grid-cols-1 md:grid-cols-1">
-          <div className="bg-card border border-border rounded-lg p-6 shadow-professional hover-lift animate-slide-up">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-muted-foreground">Total a Pagar</p>
-                <p className="text-3xl font-bold text-primary">R$ {total.toFixed(2)}</p>
+        <div className="grid gap-4 mb-6 md:mb-8">
+          <div className="bg-card border border-border rounded-lg p-4 md:p-6 shadow-professional hover-lift animate-slide-up">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex-1">
+                <p className="text-sm md:text-base text-muted-foreground">Total a Pagar</p>
+                <p className="text-2xl md:text-3xl font-bold text-primary">R$ {total.toFixed(2)}</p>
                 {Object.values(totalsByAdmin).map(({ name, total: adminTotal }) => (
-                  <p key={name} className="text-sm text-muted-foreground mt-1">
+                  <p key={name} className="text-xs md:text-sm text-muted-foreground mt-1">
                     A pagar para {name}: R$ {adminTotal.toFixed(2)}
                   </p>
                 ))}
               </div>
-              <div className="text-right">
-                <p className="text-muted-foreground">Itens Consumidos</p>
-                <p className="text-3xl font-bold">{user.consumptions?.length || 0}</p>
+              <div className="text-left sm:text-right">
+                <p className="text-sm md:text-base text-muted-foreground">Itens Consumidos</p>
+                <p className="text-2xl md:text-3xl font-bold">{user.consumptions?.length || 0}</p>
               </div>
             </div>
           </div>
