@@ -51,10 +51,9 @@ export function AdminProfitSummary({ initialProfit, initialQuantity }: AdminProf
   }, [initialProfit, initialQuantity])
 
   useEffect(() => {
-    // Polling disabled to prevent infinite re-rendering
-    // const interval = setInterval(fetchProfitData, 10000)
+    const interval = setInterval(fetchProfitData, 10000) // Poll every 10 seconds
 
-    // return () => clearInterval(interval)
+    return () => clearInterval(interval)
   }, [fetchProfitData])
 
   return (

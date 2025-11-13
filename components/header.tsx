@@ -25,6 +25,10 @@ export function Header({ userName, pixKey }: HeaderProps) {
   useEffect(() => {
     setMounted(true)
     fetchUnreadCount()
+
+    const interval = setInterval(fetchUnreadCount, 10000) // Poll every 10 seconds
+
+    return () => clearInterval(interval)
   }, [])
 
   const fetchUnreadCount = async () => {
@@ -41,9 +45,7 @@ export function Header({ userName, pixKey }: HeaderProps) {
   }
 
   useEffect(() => {
-    if (notificationsOpen) {
-      fetchUnreadCount()
-    }
+    fetchUnreadCount()
   }, [notificationsOpen])
 
   async function handleLogout() {

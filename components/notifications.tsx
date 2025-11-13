@@ -139,7 +139,7 @@ export function Notifications({ isOpen, onClose }: NotificationsProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-end p-4">
       <div className="w-full max-w-md">
-        <Card className="shadow-professional bg-neutral-950">
+        <Card className="shadow-professional bg-gray-100 dark:bg-neutral-950">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="flex items-center gap-2">
               <Bell className="h-5 w-5" />

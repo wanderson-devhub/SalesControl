@@ -50,10 +50,9 @@ export function AdminProductsSold({ adminId }: AdminProductsSoldProps) {
   useEffect(() => {
     fetchProductsSold()
 
-    // Polling disabled to prevent infinite re-rendering
-    // const interval = setInterval(fetchProductsSold, 5000)
+    const interval = setInterval(fetchProductsSold, 10000) // Poll every 10 seconds
 
-    // return () => clearInterval(interval)
+    return () => clearInterval(interval)
   }, [fetchProductsSold])
 
   if (loading) {

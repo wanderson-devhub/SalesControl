@@ -68,6 +68,10 @@ export function AdminUsersList({ adminId }: AdminUsersListProps) {
     fetchUsers();
     // Reset pagination when component mounts
     setCurrentPage(1);
+
+    const interval = setInterval(fetchUsers, 15000); // Poll every 15 seconds
+
+    return () => clearInterval(interval);
   }, [adminId]);
 
   async function fetchUsers() {

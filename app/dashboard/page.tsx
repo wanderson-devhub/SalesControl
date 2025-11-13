@@ -70,6 +70,10 @@ export default function DashboardPage() {
     }
 
     loadData()
+
+    const interval = setInterval(loadData, 10000) // Poll every 10 seconds
+
+    return () => clearInterval(interval)
   }, [router])
 
   const handleConsumptionsChange = (newConsumptions: Consumption[]) => {

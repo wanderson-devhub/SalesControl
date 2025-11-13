@@ -59,7 +59,15 @@ export function ConsumptionList({ initialConsumptions, userId, onConsumptionsCha
 
   useEffect(() => {
     fetchProducts()
+
+    const interval = setInterval(fetchProducts, 30000) // Poll every 30 seconds
+
+    return () => clearInterval(interval)
   }, [])
+
+  useEffect(() => {
+    setConsumptions(initialConsumptions)
+  }, [initialConsumptions])
 
   async function fetchProducts() {
     try {
