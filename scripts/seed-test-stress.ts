@@ -45,37 +45,64 @@ async function main() {
     },
   ]
 
-  const products = await Promise.all(
-    PRODUCTS.map((p) =>
-      prisma.product.create({
-        data: p,
-      })
-    )
-  )
+  console.log("👑 Criando 2 administradores...")
 
-  console.log("👑 Criando administrador...")
-
-  const admin = await prisma.user.create({
-    data: {
-      email: "admin@example.com",
-      password: await bcrypt.hash("admin123", 10),
-      warName: "Admin",
-      rank: "Tenente",
-      company: "3 Cia",
-      phone: "11999999999",
-      isAdmin: true,
-      pixKey: "123.456.789-00",
-      pixQrCode: "https://via.placeholder.com/200?text=QR+Code",
+  const admins = []
+  const adminData = [
+    {
+      email: "admin1@example.com",
+      warName: "Admin 1",
+      rank: "1º Tenente",
+      company: "1ª Cia",
+      phone: "11999999991",
+      pixKey: "123.456.789-01",
+      pixQrCode: "https://via.placeholder.com/200?text=QR+Code+1",
     },
-  })
+    {
+      email: "admin2@example.com",
+      warName: "Admin 2",
+      rank: "2º Tenente",
+      company: "2ª Cia",
+      phone: "11999999992",
+      pixKey: "123.456.789-02",
+      pixQrCode: "https://via.placeholder.com/200?text=QR+Code+2",
+    },
+  ]
 
-  console.log("👥 Criando 1000 usuários...")
+  for (const data of adminData) {
+    const admin = await prisma.user.create({
+      data: {
+        ...data,
+        password: await bcrypt.hash("admin123", 10),
+        isAdmin: true,
+      },
+    })
+    admins.push(admin)
+  }
 
-  const ranks = ["Soldado", "Cabo", "Sargento", "Tenente", "Capitão"]
-  const companies = ["1 Cia", "2 Cia", "3 Cia", "4 Cia"]
+  const products = []
+  for (const admin of admins) {
+    const adminProducts = await Promise.all(
+      PRODUCTS.map((p) =>
+        prisma.product.create({
+          data: {
+            ...p,
+            name: `${p.name} - ${admin.warName}`,
+            adminId: admin.id,
+          },
+        })
+      )
+    )
+    products.push(...adminProducts)
+  }
+
+  console.log("👥 Criando 2000 usuários...")
+
+  const ranks = ["Soldado", "Cabo", "3º Sargento", "2º Sargento", "1º Sargento", "2º Tenente", "1º Tenente"]
+  const companies = ["1ª Cia", "2ª Cia", "3ª Cia", "CCAp", "Base ADM"]
 
   const users = []
-  for (let i = 1; i <= 1000; i++) {
+  for (let i = 1; i <= 2000; i++) {
     const user = await prisma.user.create({
       data: {
         email: `user${i}@example.com`,
@@ -90,11 +117,11 @@ async function main() {
     users.push(user)
   }
 
-  console.log("🍦 Criando consumos de teste (5 por usuário)...")
+  console.log("🍦 Criando consumos de teste (20 por usuário)...")
 
   const consumptions = []
   for (const user of users) {
-    for (let j = 0; j < 5; j++) {
+    for (let j = 0; j < 20; j++) {
       const randomProduct = products[Math.floor(Math.random() * products.length)]
       const quantity = Math.floor(Math.random() * 5) + 1 // 1 a 5
       consumptions.push({
@@ -105,12 +132,20 @@ async function main() {
     }
   }
 
-  await prisma.consumption.createMany({
-    data: consumptions,
-  })
+  console.log(`Preparando ${consumptions.length} consumos para inserção...`)
+
+  // Inserir consumos em lotes para evitar sobrecarga
+  const batchSize = 1000
+  for (let i = 0; i < consumptions.length; i += batchSize) {
+    const batch = consumptions.slice(i, i + batchSize)
+    await prisma.consumption.createMany({
+      data: batch,
+    })
+    console.log(`Inseridos ${Math.min(i + batchSize, consumptions.length)} de ${consumptions.length} consumos...`)
+  }
 
   console.log("✅ Seed de stress finalizado com sucesso!")
-  console.log(`📊 Criados: 1 admin, ${users.length} usuários, ${consumptions.length} consumos`)
+  console.log(`📊 Criados: ${admins.length} admins, ${users.length} usuários, ${consumptions.length} consumos`)
 }
 
 main()
