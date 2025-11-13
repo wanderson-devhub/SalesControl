@@ -303,8 +303,9 @@ export function ConsumptionList({ initialConsumptions, userId, onConsumptionsCha
                               min="0"
                               max="99"
                               value={cart[product.id] || 0}
-                              onChange={(e) => setCart({ ...cart, [product.id]: Number.parseInt(e.target.value) || 0 })}
+                              onChange={(e) => setCart({ ...cart, [product.id]: Number.parseInt(e.target.value.slice(0,3)) || 0 })}
                               className="h-7 sm:h-8 text-center text-xs w-full p-1"
+                              maxLength={3}
                             />
                             <Button
                               size="sm"

@@ -295,7 +295,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
           {message}
         </div>
       )}
-
+      <p className="text-xs text-muted-foreground">Para qualquer bug identificado, por favor, informar ao administrador responsável.</p>
       <Button type="submit" disabled={loading} size="lg">
         {loading ? "Salvando..." : "Salvar Alterações"}
       </Button>
