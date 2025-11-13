@@ -13,7 +13,7 @@ export default function TermsOfUsePage() {
 
         <div className="prose prose-gray dark:prose-invert max-w-none">
           <p className="text-muted-foreground mb-6">
-            Estes Termos de Uso estabelecem as regras e condições para o uso do Sistema de Controle de Vendas. Ao acessar ou utilizar nossos serviços, você concorda em cumprir estes Termos. Se você não concordar com estes Termos, não utilize o Sistema.
+            Estes Termos de Uso estabelecem as regras e condições para o uso do Sistema de Controle de Estoque. Ao acessar ou utilizar nossos serviços, você concorda em cumprir estes Termos. Se você não concordar com estes Termos, não utilize o Sistema.
           </p>
 
           <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">1. Definições</h2>
