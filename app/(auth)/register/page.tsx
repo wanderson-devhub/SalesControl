@@ -68,6 +68,12 @@ export default function RegisterPage() {
     setError("");
     setLoading(true);
 
+    if (formData.password.length < 6) {
+      setError("A senha deve ter pelo menos 6 caracteres");
+      setLoading(false);
+      return;
+    }
+
     if (!agreeToTerms) {
       setError("Você deve concordar com os termos de uso e política de privacidade");
       setLoading(false);
