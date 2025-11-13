@@ -29,6 +29,7 @@ model User {
   consumptions Consumption[]
   charges      Charge[]
   products     Product[]
+  notifications Notification[]
 
   @@map("users")
 }
@@ -70,4 +71,17 @@ model Charge {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("charges")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // 'debt_cleared' or 'purchase_confirmed'
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
 }

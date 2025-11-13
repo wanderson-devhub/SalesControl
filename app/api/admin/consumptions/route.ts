@@ -40,6 +40,15 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    // Notify user about debt clearance
+    await prisma.notification.create({
+      data: {
+        userId,
+        type: 'debt_cleared',
+        message: `Suas dívidas foram zeradas pelo administrador ${session.warName}`,
+      },
+    })
+
     return NextResponse.json({ success: true })
   } catch (error) {
     return NextResponse.json({ error: "Failed to clear consumptions" }, { status: 500 })

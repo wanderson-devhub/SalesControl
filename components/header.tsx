@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { User, LogOut, Moon, Sun, Shield } from "lucide-react"
+import { User, LogOut, Moon, Sun, Shield, Bell } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useTheme } from "next-themes"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Notifications } from "@/components/notifications"
 
 interface HeaderProps {
   userName: string
@@ -18,10 +19,32 @@ export function Header({ userName, pixKey }: HeaderProps) {
   const [mounted, setMounted] = useState(false)
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [notificationsOpen, setNotificationsOpen] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
 
   useEffect(() => {
     setMounted(true)
+    fetchUnreadCount()
   }, [])
+
+  const fetchUnreadCount = async () => {
+    try {
+      const response = await fetch('/api/notifications?page=1')
+      if (response.ok) {
+        const data = await response.json()
+        const unread = data.notifications.filter((n: any) => !n.isRead).length
+        setUnreadCount(unread)
+      }
+    } catch (error) {
+      console.error("Failed to fetch unread count:", error)
+    }
+  }
+
+  useEffect(() => {
+    if (notificationsOpen) {
+      fetchUnreadCount()
+    }
+  }, [notificationsOpen])
 
   async function handleLogout() {
     try {
@@ -61,6 +84,20 @@ export function Header({ userName, pixKey }: HeaderProps) {
           <Button
             variant="ghost"
             size="icon"
+            onClick={() => setNotificationsOpen(true)}
+            className="hover-lift relative"
+          >
+            <Bell className="h-4 w-4" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            )}
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             disabled={!mounted}
             className="hover-lift"
@@ -95,6 +132,11 @@ export function Header({ userName, pixKey }: HeaderProps) {
           </DropdownMenu>
         </div>
       </div>
+
+      <Notifications
+        isOpen={notificationsOpen}
+        onClose={() => setNotificationsOpen(false)}
+      />
     </header>
   )
 }

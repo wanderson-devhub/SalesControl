@@ -43,6 +43,15 @@ export async function POST(request: NextRequest) {
       include: { product: { include: { admin: true } } },
     })
 
+    // Notify admin about the purchase
+    await prisma.notification.create({
+      data: {
+        userId: consumption.product.adminId,
+        type: 'purchase_confirmed',
+        message: `${session.warName} confirmou uma compra de ${quantity}x ${consumption.product.name}`,
+      },
+    })
+
     return NextResponse.json(consumption, { status: 201 })
   } catch (error) {
     return NextResponse.json({ error: "Failed to create consumption" }, { status: 500 })
